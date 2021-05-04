@@ -59,7 +59,7 @@ vagrant up
 </pre>
 
 ## Accesso
-* Con un browser puntando a http://192.168.122.250
+* Con un browser puntando a http://192.168.122.100
 
 # Note:
 * Il playbook ansible per il provisioning non e' completamente idempotente.

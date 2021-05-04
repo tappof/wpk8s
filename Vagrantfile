@@ -49,7 +49,7 @@ Vagrant.configure("2") do |config|
   $db_vip = ip.address
 
   ip = IPAddress($vm_net)
-  ip[3] = ip[3] + 250
+  ip[3] = ip[3] + 100
   $minikube_ip = ip.address
 
   (1..1).each do |i|
