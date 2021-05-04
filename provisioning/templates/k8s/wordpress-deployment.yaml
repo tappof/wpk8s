@@ -1,0 +1,137 @@
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: gluster-cluster 
+subsets:
+{% for gb in dbs_ip.values() %}
+- addresses:              
+  - ip: {{ gb }} 
+  ports:                  
+  - port: 1
+    protocol: TCP
+{% endfor %}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gluster-cluster 
+spec:
+  ports:
+  - port: 1 
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: gluster-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+  - ReadWriteMany
+  glusterfs:
+    endpoints: gluster-cluster
+    path: /wpsharedfs 
+    readOnly: false
+  persistentVolumeReclaimPolicy: Retain
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gluster-claim
+spec:
+  storageClassName: ""
+  volumeName: gluster-pv
+  accessModes:
+  - ReadWriteMany
+  resources:
+     requests:
+       storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+  labels:
+    app: wordpress
+spec:
+  replicas: {{ wp_num }}
+  selector:
+    matchLabels:
+      app: wordpress
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: wordpress
+        tier: frontend
+    spec:
+      containers:
+      - image: wordpress:4.8-apache
+        name: wordpress
+        env:
+        - name: WORDPRESS_DB_HOST
+          value: {{ db_vip }} 
+        - name: WORDPRESS_DB_USER
+          value: {{ wpdb_user }} 
+        - name: WORDPRESS_DB_NAME
+          value: {{ wpdb_name }} 
+        - name: WORDPRESS_DB_PASSWORD
+          value: {{ wpdb_pass }} 
+        ports:
+        - containerPort: 80
+          name: wordpress
+        volumeMounts:
+        - name: wordpress-persistent-storage
+          mountPath: /var/www/html/wp-content
+          readOnly: false
+      volumes:
+      - name: wordpress-persistent-storage
+        persistentVolumeClaim:
+          claimName: gluster-claim
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: wordpress-scaler
+spec:
+  scaleTargetRef:
+    kind: Deployment 
+    name: wordpress
+  minReplicas: {{ wp_num }} 
+  maxReplicas: {{ wp_num_max }}
+  targetCPUUtilizationPercentage: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wordpress 
+  labels:
+    name: wordpress 
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      name: http
+  selector:
+    app: wordpress 
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wordpress-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: wordpress.k8s
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: wordpress
+                port:
+                  number: 80
