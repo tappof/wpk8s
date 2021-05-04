@@ -5,9 +5,9 @@ db_num: 3
 wp_num: 3 
 # numero massimo di repliche in fase di autoscaling
 wp_num_max: 10
-# cpu per vm
+# cpu per vm (db e dbb)
 vm_cpu: 1
-# ram per vm (>= 256)
+# ram per vm (>= 256) (db e dbb)
 vm_ram: 512 
 # password di root per mariadb
 db_root_pwd: asdlkjasdlkj1
@@ -17,7 +17,7 @@ wpdb_name: wpdb
 wpdb_user: wpu
 # password utente wpbd_user per db wpdb_name
 wpdb_pass: qwepoiqwepoi1
-# rete su cui risiedono le macchine
+# rete su cui risiedono le macchine (vedere sudo virsh net-edit default)
 vm_net: 192.168.122.0/24
-# defatul gw
+# defatul gw (vedere sudo virsh net-edit default)
 vm_net_gw: 192.168.122.1
