@@ -18,7 +18,7 @@
     * Le controindicazioni principali di questo approccio sono legate alla sicurezza (minikube deve girare come utente root) e alla mancanza di meccanismi built-in per limitare le risorse utilizzate;
   * Il punto di ingresso del frontend è un ingress che proxa le richieste a dei service nodePort esposti dai container docker che eseguono wordpress su apache;
   * I pod wordpress sono lanciati (in un numero configurabile) da un deployment;
-    * Al deployment è associato un horizontal pod autoscaler (hpa) che replica aumenta le istanze su base cpu utilizzata fino ad un numero massimo configurabile in fase di deploy dell'infrastruttura;
+    * Al deployment è associato un horizontal pod autoscaler (hpa) che crea nuove istanze su base cpu utilizzata fino ad un numero massimo configurabile in fase di deploy dell'infrastruttura;
   * Ogni pod monta un volume tramite persistentVolumeClaim sotto /var/www/html/wp-content;
     * Il claim è forzato ad erogare spazio utilizzando un persistentVolume gluster-pv;
     * Il volume gluster-pv è di tipo glusterfs e sfrutta un service con endpoints opportunamente configurati per puntare ai server db che espongono il volume wpsharedfs;
@@ -26,15 +26,15 @@
       * la possibilità di montare il volume in modalità readWriteMany (https://kubernetes.io/docs/concepts/storage/volumes/#glusterfs);
       * ridondanza dei dati (replicati su tutti i nodi db);
       * scalabilità (pod di piu' nodi k8s possono montare gli stessi volumi, e' possibile aumentare i nodi che espongono il volume gluster e bilanciare il carico aggiungedoli all'endpoints);
-  * I pod contattano per l'accesso al db il bilanciatore lvs esterno
-    * nella sostanza ad ogni possibile nodo k8s viene associato un db server differente;
+  * I pod contattano per l'accesso al db il bilanciatore lvs esterno;
+    * nella sostanza ad ogni possibile nodo k8s viene associato un db server differente.
 
 ![Architecture](https://github.com/tappof/wpk8s/blob/master/images/wpk8s.png)
 
 # Bootstrap
 ## Tool e parametrizzazione
-* L'intera infrastruttura viene costruita con vagrant e provisioning ansible; 
-* E' possibile modificare alcune impostazioni in vmm/provisioning/vm-config.yml;
+* L'intera infrastruttura viene costruita con vagrant e provisionata con ansible; 
+* E' possibile modificare alcune impostazioni in provisioning/vm-config.yml;
 * La documentazione delle impostazioni e' direttamente nel file di configurazione.
 
 ### Prerequisiti e setup dell'ambiente
@@ -52,10 +52,9 @@ ambiente: debian buster + vagrant con provider libvirt
 * ansible-galaxy collection install community.mysql
 
 ## Startup
-* Verificare le conf in vmm/provisioning/vm-config.yml (attenzione ai parametri legati al networking)
+* Verificare le conf in provisioning/vm-config.yml (attenzione ai parametri legati al networking)
 * Per deployare l'infrastruttura eseguire:
 <pre>
-cd vmm
 vagrant up
 </pre>
 
