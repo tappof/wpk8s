@@ -1,5 +1,7 @@
 # wpk8s 
 
+Deploy automatico di una architettura ridondata e scalabile per wordpress basata su vm per db e repository e k8s per il frontend.
+
 ## Architettura
 La ridondanza e la scalabilità del db (con hostname db1..dbN) viene garantita tramite cluster galera (builtin nella versione di mariadb installata):
 * replica sincrona parallela a livello di riga;
