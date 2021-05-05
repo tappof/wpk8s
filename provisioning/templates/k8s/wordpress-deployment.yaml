@@ -125,7 +125,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: wpk8s.info 
+    - host: {{ wp_fqdn }} 
       http:
         paths:
           - path: /
