@@ -55,11 +55,12 @@ ambiente: debian buster + vagrant con provider libvirt
 * Verificare le conf in provisioning/vm-config.yml (attenzione ai parametri legati al networking)
 * Per deployare l'infrastruttura eseguire:
 <pre>
+sudo echo "192.168.122.100 wpk8s.info" >> /etc/hosts
 vagrant up
 </pre>
 
 ## Accesso
-* Con un browser puntando a http://192.168.122.100
+* Con un browser puntando a http://wpk8s.info
 
 # Note:
 * Il playbook ansible per il provisioning non e' completamente idempotente.

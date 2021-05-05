@@ -68,7 +68,7 @@ spec:
         tier: frontend
     spec:
       containers:
-      - image: wordpress:4.8-apache
+      - image: wordpress:5.7-apache
         name: wordpress
         env:
         - name: WORDPRESS_DB_HOST
@@ -84,7 +84,7 @@ spec:
           name: wordpress
         volumeMounts:
         - name: wordpress-persistent-storage
-          mountPath: /var/www/html/wp-content
+          mountPath: /var/www/html
           readOnly: false
       volumes:
       - name: wordpress-persistent-storage
@@ -125,7 +125,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: wordpress.k8s
+    - host: wpk8s.info 
       http:
         paths:
           - path: /
