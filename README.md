@@ -75,3 +75,4 @@ cat vmm/provisioning/vm-config.yml  | grep "net_gw\|wp_fqdn" | awk '{print $NF}'
 # Note:
 * Il playbook ansible per il provisioning non e' completamente idempotente;
 * Le password nel playbook non sono protette da vault.
+* Il sito e' esposto in http.
