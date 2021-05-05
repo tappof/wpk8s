@@ -29,7 +29,7 @@ I frontend vengono configurati in batteria su una vm con a bordo k8s:
 Il punto di ingresso del frontend è un ingress che proxa le richieste a dei service nodePort esposti dai container docker che erogano wordpress su apache.
 I pod wordpress sono lanciati (in un numero configurabile) da un deployment a cui è associato un horizontal pod autoscaler (hpa) che crea nuove istanze su base cpu utilizzata fino ad un numero massimo configurabile in fase di deploy dell'infrastruttura.
 
-Ogni pod monta un volume tramite persistentVolumeClaim sotto /var/www/html/wp-content;
+Ogni pod monta un volume tramite persistentVolumeClaim sotto /var/www/html;
 * Il claim è forzato ad erogare spazio utilizzando un persistentVolume gluster-pv;
 * Il volume gluster-pv è di tipo glusterfs e sfrutta un service con endpoints opportunamente configurati per puntare ai server db che espongono il volume wpsharedfs;
 * Gluster così utilizzato assicura:
